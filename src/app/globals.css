@@ -53,3 +53,111 @@ body {
 .animate-ticker {
   animation: ticker-scroll 60s linear infinite;
 }
+
+/* --- Landing hero: karanlık, hareketli, ama tamamen kendi ürettiğimiz görsel --- */
+
+@keyframes aura-drift {
+  0%,
+  100% {
+    transform: translate(-8%, -6%) scale(1);
+  }
+  50% {
+    transform: translate(6%, 4%) scale(1.15);
+  }
+}
+
+@keyframes aura-drift-reverse {
+  0%,
+  100% {
+    transform: translate(6%, 4%) scale(1.05);
+  }
+  50% {
+    transform: translate(-8%, -8%) scale(1.2);
+  }
+}
+
+.hero-aura-gold {
+  animation: aura-drift 18s ease-in-out infinite;
+}
+
+.hero-aura-emerald {
+  animation: aura-drift-reverse 22s ease-in-out infinite;
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(to right, rgba(184, 147, 79, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(184, 147, 79, 0.08) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 40%, transparent 90%);
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes bars-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1.04);
+  }
+}
+
+.hero-bars-pulse {
+  transform-origin: bottom;
+  animation: bars-pulse 4.5s ease-in-out infinite;
+}
+
+@keyframes ring-spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.hero-ring-spin {
+  animation: ring-spin 90s linear infinite;
+}
+
+@keyframes live-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.live-dot {
+  animation: live-blink 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-aura-gold,
+  .hero-aura-emerald,
+  .hero-bars-pulse,
+  .hero-ring-spin,
+  .live-dot,
+  .animate-fade-in-up {
+    animation: none;
+  }
+}
