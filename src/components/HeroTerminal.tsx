@@ -105,39 +105,39 @@ export function HeroTerminal() {
       </svg>
 
       {/* Left panel: leaderboard */}
-      <div className="absolute left-[3%] top-[40%] hidden w-[26%] max-w-[300px] rounded-[4px] border border-white/15 bg-black/50 p-4 opacity-70 backdrop-blur-sm sm:block">
-        <p className="mb-3 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-white/40">
+      <div className="absolute left-[3%] top-[40%] hidden w-[26%] max-w-[300px] rounded-[4px] border border-white/25 bg-black/75 p-4 shadow-lg shadow-black/40 backdrop-blur-sm sm:block">
+        <p className="mb-3 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-white/60">
           <span className="live-dot h-1.5 w-1.5 rounded-full bg-signal-positive" />
           Top traders · monthly
         </p>
         <div className="flex flex-col gap-2.5">
           {LEADERBOARD.map((t) => (
             <div key={t.name} className="flex items-center gap-2">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/10 font-mono text-[9px] text-white/60">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/15 font-mono text-[9px] text-white/85">
                 {initials(t.name)}
               </div>
-              <span className="flex-1 truncate font-mono text-[11px] text-white/60">{t.name}</span>
-              <span className="font-mono text-[11px] text-signal-positive/80">{t.ret}</span>
+              <span className="flex-1 truncate font-mono text-[11px] text-white/85">{t.name}</span>
+              <span className="font-mono text-[11px] text-signal-positive">{t.ret}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* Right panel: live activity feed */}
-      <div className="absolute right-[3%] top-[44%] w-[30%] max-w-[340px] rounded-[4px] border border-white/15 bg-black/50 p-4 opacity-70 backdrop-blur-sm sm:right-[5%]">
-        <p className="mb-3 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-white/40">
+      <div className="absolute right-[3%] top-[44%] w-[30%] max-w-[340px] rounded-[4px] border border-white/25 bg-black/75 p-4 shadow-lg shadow-black/40 backdrop-blur-sm sm:right-[5%]">
+        <p className="mb-3 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-white/60">
           <span className="live-dot h-1.5 w-1.5 rounded-full bg-signal-positive" />
           Live activity
         </p>
         <div className="flex flex-col gap-2.5">
           {ACTIVITY.map((a, i) => (
-            <div key={i} className="flex items-center justify-between border-b border-white/10 pb-2 font-mono text-[11px] text-white/55 last:border-0">
+            <div key={i} className="flex items-center justify-between border-b border-white/15 pb-2 font-mono text-[11px] text-white/80 last:border-0">
               <span className="truncate">{a.who}</span>
-              <span className="text-white/35">{a.what}</span>
-              <span className={a.dir === "LONG" || a.dir === "BUY" ? "text-signal-positive/80" : "text-signal-negative/80"}>
+              <span className="text-white/55">{a.what}</span>
+              <span className={a.dir === "LONG" || a.dir === "BUY" ? "text-signal-positive" : "text-signal-negative"}>
                 {a.dir}
               </span>
-              <span className="text-white/30">{a.ago}</span>
+              <span className="text-white/45">{a.ago}</span>
             </div>
           ))}
         </div>
@@ -155,12 +155,6 @@ export function HeroTerminal() {
       {/* Vignette for legibility */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_65%_55%_at_50%_40%,transparent_0%,rgba(14,17,22,0.9)_75%)]" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg-primary/50 to-bg-primary" />
-
-      <span className="absolute bottom-3 right-4 z-10 text-right font-mono text-[10px] leading-relaxed text-white/20">
-        Illustrative preview data
-        <br />
-        Photo: Dominik Hofbauer / Unsplash
-      </span>
     </div>
   );
 }
