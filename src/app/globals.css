@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #0e1116;
+  --bg-surface: #171b24;
+  --bg-surface-raised: #1d222d;
+  --border-hairline: #2a2f3a;
+  --accent-gold: #b8934f;
+  --accent-gold-dim: #8a713f;
+  --signal-positive: #3a7d5c;
+  --signal-negative: #8c4a45;
+  --text-primary: #edeae2;
+  --text-muted: #8a8f99;
+}
+
+@theme inline {
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-surface-raised: var(--bg-surface-raised);
+  --color-border-hairline: var(--border-hairline);
+  --color-accent-gold: var(--accent-gold);
+  --color-accent-gold-dim: var(--accent-gold-dim);
+  --color-signal-positive: var(--signal-positive);
+  --color-signal-negative: var(--signal-negative);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+/* Signal, kişisel light/dark toggle olmayan, kasıtlı olarak tek temalı
+   (daima koyu) bir üründür — Bloomberg Terminal'in "kulüp" hissi buna dayanır. */
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ticker {
+  animation: ticker-scroll 60s linear infinite;
+}
