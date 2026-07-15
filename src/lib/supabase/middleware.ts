@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // Freemium: bu sayfalar yalnızca oturum ister, abonelik şart değil — ücretsiz
 // katman kısıtları (ticker sayısı, geçmiş penceresi) veri seviyesinde RLS ile
 // uygulanır (bkz. supabase/migrations/0001_init.sql), sayfa erişimi engellenmez.
-const AUTH_ONLY_PREFIXES = ["/billing", "/dashboard", "/watchlist", "/ticker"];
+const AUTH_ONLY_PREFIXES = ["/billing", "/dashboard", "/watchlist", "/ticker", "/insider"];
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });

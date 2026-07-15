@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import { signOut } from "@/app/login/actions";
 
 const links = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/watchlist", label: "Watchlist" },
-  { href: "/billing", label: "Billing" },
+  { href: "/dashboard", label: "Insiders", matchPrefixes: ["/dashboard", "/insider", "/ticker"] },
+  { href: "/watchlist", label: "Watchlist", matchPrefixes: ["/watchlist"] },
+  { href: "/billing", label: "Billing", matchPrefixes: ["/billing"] },
 ];
 
 export function Nav() {
@@ -28,7 +28,7 @@ export function Nav() {
               key={link.href}
               href={link.href}
               className={`shrink-0 rounded-[6px] px-2 py-1.5 whitespace-nowrap sm:px-3 ${
-                pathname === link.href
+                link.matchPrefixes.some((p) => pathname.startsWith(p))
                   ? "bg-bg-surface-raised text-accent-gold"
                   : "text-text-muted hover:text-text-primary"
               }`}
