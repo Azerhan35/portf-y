@@ -6,9 +6,9 @@ export function TradeRow({ trade, showTicker = true }: { trade: InsiderTrade; sh
   const isSell = trade.transaction_type === "sell";
 
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-border-hairline px-5 py-4 last:border-0">
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2">
+    <div className="flex flex-col gap-3 border-b border-border-hairline px-4 py-4 last:border-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5">
+      <div className="flex flex-col gap-1 min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
           {showTicker && (
             <Link
               href={`/ticker/${trade.ticker}`}
@@ -29,14 +29,14 @@ export function TradeRow({ trade, showTicker = true }: { trade: InsiderTrade; sh
             {trade.transaction_type}
           </span>
         </div>
-        <p className="text-sm text-text-primary">
+        <p className="text-sm text-text-primary break-words">
           {trade.insider_name}
           {trade.insider_role && <span className="text-text-muted"> · {trade.insider_role}</span>}
         </p>
         <p className="text-xs text-text-muted">Filed {trade.filing_date}</p>
       </div>
 
-      <div className="text-right font-mono text-sm">
+      <div className="flex gap-4 font-mono text-sm sm:flex-col sm:gap-0 sm:text-right">
         {trade.shares != null && <p>{trade.shares.toLocaleString()} sh</p>}
         {trade.price != null && <p className="text-text-muted">${trade.price.toFixed(2)}</p>}
         {trade.total_value != null && (

@@ -15,16 +15,19 @@ export function Nav() {
 
   return (
     <nav className="border-b border-border-hairline bg-bg-primary">
-      <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
-        <Link href="/dashboard" className="font-display text-lg font-medium tracking-tight">
-          Signal
+      <div className="mx-auto flex max-w-4xl items-center justify-between gap-2 px-3 py-3 sm:px-4">
+        <Link
+          href="/dashboard"
+          className="shrink-0 font-display text-base font-medium tracking-tight sm:text-lg"
+        >
+          Portfey
         </Link>
-        <div className="flex items-center gap-1 text-sm">
+        <div className="flex items-center gap-0.5 overflow-x-auto text-xs sm:gap-1 sm:text-sm">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`rounded-[6px] px-3 py-1.5 whitespace-nowrap ${
+              className={`shrink-0 rounded-[6px] px-2 py-1.5 whitespace-nowrap sm:px-3 ${
                 pathname === link.href
                   ? "bg-bg-surface-raised text-accent-gold"
                   : "text-text-muted hover:text-text-primary"
@@ -33,8 +36,11 @@ export function Nav() {
               {link.label}
             </Link>
           ))}
-          <form action={signOut}>
-            <button type="submit" className="rounded-[6px] px-3 py-1.5 text-text-muted hover:text-text-primary">
+          <form action={signOut} className="shrink-0">
+            <button
+              type="submit"
+              className="rounded-[6px] px-2 py-1.5 whitespace-nowrap text-text-muted hover:text-text-primary sm:px-3"
+            >
               Sign out
             </button>
           </form>

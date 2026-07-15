@@ -11,7 +11,7 @@ export default async function LoginPage({
   return (
     <div className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-6 px-6">
       <div className="text-center">
-        <h1 className="font-display text-3xl font-medium tracking-tight">Signal</h1>
+        <h1 className="font-display text-3xl font-medium tracking-tight">Portfey</h1>
         <p className="mt-2 text-sm text-text-muted">Track the money before the crowd does.</p>
       </div>
 
@@ -53,7 +53,7 @@ export default async function LoginPage({
       <p className="text-center text-sm text-text-muted">
         Don&apos;t have an account?{" "}
         <Link href="/signup" className="font-medium text-accent-gold underline">
-          Start your trial
+          Get started free
         </Link>
       </p>
     </div>

@@ -4,7 +4,7 @@ import "server-only";
 // Format: "ŞirketAdı iletişim@eposta.com" (bkz. .env.example / SEC_EDGAR_USER_AGENT).
 export function secHeaders(): HeadersInit {
   return {
-    "User-Agent": process.env.SEC_EDGAR_USER_AGENT || "Signal contact@example.com",
+    "User-Agent": process.env.SEC_EDGAR_USER_AGENT || "Portfey contact@example.com",
     Accept: "application/json, text/xml, */*",
   };
 }

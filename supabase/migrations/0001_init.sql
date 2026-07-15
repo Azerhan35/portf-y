@@ -63,10 +63,24 @@ create policy "watchlists_select_own"
   to authenticated
   using (auth.uid() = user_id);
 
+-- Freemium: ücretsiz kullanıcılar en fazla 2 ticker ekleyebilir (uygulama
+-- katmanında da kontrol edilir, ama RLS burada asıl garantiyi verir — bir
+-- kullanıcı kendi anon anahtarıyla API'yi atlayıp doğrudan insert yapamaz).
+-- Sınır değişirse src/lib/subscription.ts'teki FREE_TICKER_LIMIT ile birlikte güncelleyin.
 create policy "watchlists_insert_own"
   on public.watchlists for insert
   to authenticated
-  with check (auth.uid() = user_id);
+  with check (
+    auth.uid() = user_id
+    and (
+      exists (
+        select 1 from public.profiles
+        where profiles.id = auth.uid()
+          and profiles.subscription_status in ('trialing', 'active')
+      )
+      or (select count(*) from public.watchlists where watchlists.user_id = auth.uid()) < 2
+    )
+  );
 
 create policy "watchlists_delete_own"
   on public.watchlists for delete
@@ -97,13 +111,15 @@ create table if not exists public.insider_trades (
 
 alter table public.insider_trades enable row level security;
 
--- Yalnızca aktif/deneme aboneliği olan kullanıcılar veriyi görebilir —
--- ücretli ürünün çekirdek verisi bu yüzden RLS seviyesinde de korunuyor.
-create policy "insider_trades_select_subscribers"
+-- Freemium: ücretsiz kullanıcılar yalnızca son 3 günün dosyalamalarını görür;
+-- aktif/deneme aboneliği olanlar tüm geçmişi görür. Sınır değişirse
+-- src/lib/subscription.ts'teki FREE_HISTORY_DAYS ile burayı birlikte güncelleyin.
+create policy "insider_trades_select_freemium"
   on public.insider_trades for select
   to authenticated
   using (
-    exists (
+    filing_date >= (current_date - interval '3 days')
+    or exists (
       select 1 from public.profiles
       where profiles.id = auth.uid()
         and profiles.subscription_status in ('trialing', 'active')

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ingestForm4ForTicker } from "@/lib/sec/ingest";
+import { isPaidTier, FREE_TICKER_LIMIT } from "@/lib/subscription";
 
 export async function GET() {
   const supabase = await createClient();
@@ -43,12 +44,36 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid ticker symbol." }, { status: 400 });
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("subscription_status")
+    .eq("id", user.id)
+    .single();
+
+  if (!isPaidTier(profile?.subscription_status)) {
+    const { count } = await supabase
+      .from("watchlists")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id);
+
+    if ((count ?? 0) >= FREE_TICKER_LIMIT) {
+      return NextResponse.json(
+        {
+          error: `Free plan is limited to ${FREE_TICKER_LIMIT} tickers. Upgrade to add more.`,
+        },
+        { status: 403 }
+      );
+    }
+  }
+
   const { error } = await supabase.from("watchlists").insert({ user_id: user.id, ticker });
 
   if (error) {
     const message = error.message.includes("duplicate")
       ? "Already on your watchlist."
-      : "Could not add ticker.";
+      : error.message.includes("row-level security")
+        ? `Free plan is limited to ${FREE_TICKER_LIMIT} tickers. Upgrade to add more.`
+        : "Could not add ticker.";
     return NextResponse.json({ error: message }, { status: 400 });
   }
 

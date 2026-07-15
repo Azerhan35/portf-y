@@ -20,7 +20,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Signal — Track the Insiders",
+  title: "Portfey — Track the Insiders",
   description:
     "Real-time insider trading, institutional fund, and Congress trade alerts for serious traders. Not investment advice.",
 };

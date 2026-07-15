@@ -11,9 +11,9 @@ export default async function SignupPage({
   return (
     <div className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-6 px-6">
       <div className="text-center">
-        <h1 className="font-display text-3xl font-medium tracking-tight">Join Signal</h1>
+        <h1 className="font-display text-3xl font-medium tracking-tight">Join Portfey</h1>
         <p className="mt-2 text-sm text-text-muted">
-          7-day free trial, then $19/mo. Cancel anytime.
+          Free to start. Upgrade to Unlimited anytime for $19/mo.
         </p>
       </div>
 
@@ -55,7 +55,7 @@ export default async function SignupPage({
       </p>
 
       <p className="text-center text-xs text-text-muted">
-        Signal surfaces public regulatory filings for informational purposes only. Nothing here
+        Portfey surfaces public regulatory filings for informational purposes only. Nothing here
         is investment advice.
       </p>
     </div>

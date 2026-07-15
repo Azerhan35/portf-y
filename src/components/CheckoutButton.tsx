@@ -37,9 +37,9 @@ export function CheckoutButton({ email, userId }: { email: string; userId: strin
     <button
       onClick={handleClick}
       disabled={loading}
-      className="rounded-md bg-accent-gold px-5 py-2.5 text-sm font-medium text-bg-primary hover:bg-accent-gold-dim disabled:opacity-40"
+      className="w-full rounded-md bg-accent-gold px-5 py-2.5 text-sm font-medium text-bg-primary hover:bg-accent-gold-dim disabled:opacity-40 sm:w-auto"
     >
-      {loading ? "Loading..." : "Start 7-day free trial"}
+      {loading ? "Loading..." : "Upgrade — $19/month"}
     </button>
   );
 }

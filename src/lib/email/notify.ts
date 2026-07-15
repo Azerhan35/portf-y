@@ -2,6 +2,7 @@ import "server-only";
 import { Resend } from "resend";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, InsiderTrade } from "@/types/database";
+import { isPaidTier } from "@/lib/subscription";
 
 function formatTradeLine(trade: InsiderTrade): string {
   const action =
@@ -16,7 +17,8 @@ function formatTradeLine(trade: InsiderTrade): string {
 }
 
 // Yeni eklenen insider trade'ler için, o ticker'ı watchlist'inde tutan ve
-// aktif/deneme aboneliği olan kullanıcılara e-posta gönderir. notifications
+// ücretli (aktif/deneme) aboneliği olan kullanıcılara e-posta gönderir — anlık
+// email uyarısı, freemium modelinde ücretsiz katıma dahil değildir. notifications
 // tablosundaki unique(user_id, trade_id, channel) kısıtı sayesinde aynı
 // bildirim iki kez gönderilmez (cron tekrar çalışsa bile).
 export async function sendNewTradeNotifications(
@@ -50,7 +52,7 @@ export async function sendNewTradeNotifications(
 
     for (const watcher of watchersForTicker) {
       const profile = profileById.get(watcher.user_id);
-      if (!profile || !["trialing", "active"].includes(profile.subscription_status)) continue;
+      if (!profile || !isPaidTier(profile.subscription_status)) continue;
 
       const { error: insertError } = await admin
         .from("notifications")
