@@ -51,6 +51,27 @@ export type Notification = {
   sent_at: string;
 };
 
+export type TradeSide = "long" | "short";
+
+// Trading journal: kullanıcının kendi işlem geçmişi (insider_trades ile
+// karışmasın diye JournalTrade adlandırıldı).
+export type JournalTrade = {
+  id: string;
+  user_id: string;
+  symbol: string;
+  side: TradeSide;
+  quantity: number;
+  entry_price: number;
+  exit_price: number | null;
+  fees: number;
+  entered_at: string;
+  exited_at: string | null;
+  tags: string[];
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -83,6 +104,19 @@ export type Database = {
         Row: Notification;
         Insert: Partial<Notification> & { user_id: string; trade_id: string };
         Update: Partial<Notification>;
+        Relationships: [];
+      };
+      trades: {
+        Row: JournalTrade;
+        Insert: Partial<JournalTrade> & {
+          user_id: string;
+          symbol: string;
+          side: TradeSide;
+          quantity: number;
+          entry_price: number;
+          entered_at: string;
+        };
+        Update: Partial<JournalTrade>;
         Relationships: [];
       };
     };

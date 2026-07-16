@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 import { signOut } from "@/app/login/actions";
 
 const links = [
-  { href: "/dashboard", label: "Insiders", matchPrefixes: ["/dashboard", "/insider", "/ticker"] },
+  { href: "/dashboard", label: "Dashboard", matchPrefixes: ["/dashboard"] },
+  { href: "/journal", label: "Journal", matchPrefixes: ["/journal"] },
+  { href: "/insiders", label: "Insiders", matchPrefixes: ["/insiders", "/insider", "/ticker"] },
   { href: "/watchlist", label: "Watchlist", matchPrefixes: ["/watchlist"] },
   { href: "/billing", label: "Billing", matchPrefixes: ["/billing"] },
 ];
