@@ -118,3 +118,118 @@ export function bySymbol(trades: JournalTrade[]): GroupBreakdown[] {
 export function byTag(trades: JournalTrade[]): GroupBreakdown[] {
   return groupBy(trades, (t) => (t.tags.length > 0 ? t.tags : []));
 }
+
+// --- Davranışsal analiz --------------------------------------------------
+// Bunlar salt toplam/ortalama değil, trader'ın kendi alışkanlıklarını
+// (intikam trade'i, tutma süresi, seri etkisi) ortaya çıkarır — "hesap
+// makinesi"nin ötesine geçen kısım burası.
+
+function closedSortedByExit(trades: JournalTrade[]): JournalTrade[] {
+  return trades
+    .filter((t) => t.exit_price != null && t.exited_at)
+    .sort((a, b) => new Date(a.exited_at!).getTime() - new Date(b.exited_at!).getTime());
+}
+
+export type RevengeTradingInsight = {
+  afterLossAvgPnl: number;
+  afterLossWinRate: number;
+  baselineAvgPnl: number;
+  baselineWinRate: number;
+  afterLossCount: number;
+  flagged: boolean;
+};
+
+// "İntikam trade'i": bir kayıptan hemen sonra açılan trade'lerin performansı,
+// genel ortalamadan belirgin şekilde kötüyse bunu işaretler.
+export function revengeTradingInsight(trades: JournalTrade[]): RevengeTradingInsight | null {
+  const closed = closedSortedByExit(trades);
+  if (closed.length < 6) return null; // anlamlı bir örneklem için minimum
+
+  const afterLossPnls: number[] = [];
+  const baselinePnls: number[] = [];
+
+  for (let i = 1; i < closed.length; i++) {
+    const prevPnl = computePnl(closed[i - 1]) ?? 0;
+    const pnl = computePnl(closed[i]) ?? 0;
+    if (prevPnl < 0) afterLossPnls.push(pnl);
+    else baselinePnls.push(pnl);
+  }
+
+  if (afterLossPnls.length < 3 || baselinePnls.length < 3) return null;
+
+  const avg = (arr: number[]) => arr.reduce((s, p) => s + p, 0) / arr.length;
+  const winRate = (arr: number[]) => (arr.filter((p) => p > 0).length / arr.length) * 100;
+
+  const afterLossAvgPnl = avg(afterLossPnls);
+  const baselineAvgPnl = avg(baselinePnls);
+  const afterLossWinRate = winRate(afterLossPnls);
+  const baselineWinRate = winRate(baselinePnls);
+
+  return {
+    afterLossAvgPnl: Math.round(afterLossAvgPnl * 100) / 100,
+    afterLossWinRate: Math.round(afterLossWinRate * 10) / 10,
+    baselineAvgPnl: Math.round(baselineAvgPnl * 100) / 100,
+    baselineWinRate: Math.round(baselineWinRate * 10) / 10,
+    afterLossCount: afterLossPnls.length,
+    flagged: afterLossAvgPnl < baselineAvgPnl * 0.5 || afterLossWinRate < baselineWinRate - 15,
+  };
+}
+
+const HOLD_BUCKETS = [
+  { label: "< 15 min", maxMinutes: 15 },
+  { label: "15m – 2h", maxMinutes: 120 },
+  { label: "2h – 1 day", maxMinutes: 60 * 24 },
+  { label: "> 1 day", maxMinutes: Infinity },
+];
+
+export function byHoldTime(trades: JournalTrade[]): { bucket: string; avgPnl: number; count: number }[] {
+  const closed = trades.filter((t) => t.exit_price != null && t.exited_at);
+  const buckets = HOLD_BUCKETS.map((b) => ({ ...b, pnls: [] as number[] }));
+
+  for (const t of closed) {
+    const minutes = (new Date(t.exited_at!).getTime() - new Date(t.entered_at).getTime()) / 60000;
+    const bucket = buckets.find((b) => minutes <= b.maxMinutes) ?? buckets[buckets.length - 1];
+    bucket.pnls.push(computePnl(t) ?? 0);
+  }
+
+  return buckets.map((b) => ({
+    bucket: b.label,
+    count: b.pnls.length,
+    avgPnl: b.pnls.length > 0 ? Math.round((b.pnls.reduce((s, p) => s + p, 0) / b.pnls.length) * 100) / 100 : 0,
+  }));
+}
+
+export type StreakInsight = {
+  currentStreak: number;
+  currentStreakType: "win" | "loss" | null;
+  longestWinStreak: number;
+  longestLossStreak: number;
+};
+
+export function streaks(trades: JournalTrade[]): StreakInsight {
+  const closed = closedSortedByExit(trades);
+  let longestWin = 0;
+  let longestLoss = 0;
+  let runWin = 0;
+  let runLoss = 0;
+
+  for (const t of closed) {
+    const pnl = computePnl(t) ?? 0;
+    if (pnl > 0) {
+      runWin += 1;
+      runLoss = 0;
+    } else {
+      runLoss += 1;
+      runWin = 0;
+    }
+    longestWin = Math.max(longestWin, runWin);
+    longestLoss = Math.max(longestLoss, runLoss);
+  }
+
+  return {
+    currentStreak: runWin > 0 ? runWin : runLoss,
+    currentStreakType: closed.length === 0 ? null : runWin > 0 ? "win" : "loss",
+    longestWinStreak: longestWin,
+    longestLossStreak: longestLoss,
+  };
+}

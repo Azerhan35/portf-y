@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { computeStats, equityCurve, byDayOfWeek, bySymbol } from "@/lib/journalAnalytics";
+import {
+  computeStats,
+  equityCurve,
+  byDayOfWeek,
+  bySymbol,
+  revengeTradingInsight,
+  byHoldTime,
+  streaks,
+} from "@/lib/journalAnalytics";
 import { EquityCurveChart } from "@/components/EquityCurveChart";
 import { DayOfWeekChart } from "@/components/DayOfWeekChart";
 import { isPaidTier, FREE_TRADE_LIMIT } from "@/lib/subscription";
@@ -39,6 +47,9 @@ export default async function DashboardPage() {
   const curve = equityCurve(rows);
   const dayBreakdown = byDayOfWeek(rows);
   const symbolBreakdown = bySymbol(rows).slice(0, 8);
+  const revenge = revengeTradingInsight(rows);
+  const holdTime = byHoldTime(rows);
+  const streakInfo = streaks(rows);
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8">
@@ -140,6 +151,70 @@ export default async function DashboardPage() {
               </section>
             )}
           </div>
+
+          <section className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+            <div className="rounded-[6px] border border-border-hairline bg-bg-surface p-5">
+              <h2 className="mb-3 text-sm font-medium text-text-muted">Streaks</h2>
+              <p className="font-mono text-2xl">
+                {streakInfo.currentStreak}{" "}
+                <span
+                  className={`text-sm ${
+                    streakInfo.currentStreakType === "win" ? "text-signal-positive" : "text-signal-negative"
+                  }`}
+                >
+                  {streakInfo.currentStreakType ? `${streakInfo.currentStreakType} streak` : ""}
+                </span>
+              </p>
+              <p className="mt-2 text-xs text-text-muted">
+                Longest win streak: {streakInfo.longestWinStreak} · Longest loss streak:{" "}
+                {streakInfo.longestLossStreak}
+              </p>
+            </div>
+
+            <div className="rounded-[6px] border border-border-hairline bg-bg-surface p-5">
+              <h2 className="mb-3 text-sm font-medium text-text-muted">P&amp;L by hold time</h2>
+              <div className="flex flex-col gap-2">
+                {holdTime.map((h) => (
+                  <div key={h.bucket} className="flex items-center justify-between text-sm">
+                    <span className="text-text-muted">{h.bucket}</span>
+                    <span className="text-xs text-text-muted">{h.count}x</span>
+                    <span className={`font-mono ${h.avgPnl >= 0 ? "text-signal-positive" : "text-signal-negative"}`}>
+                      {h.avgPnl >= 0 ? "+" : ""}${h.avgPnl.toFixed(2)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div
+              className={`rounded-[6px] border p-5 ${
+                revenge?.flagged
+                  ? "border-signal-negative/40 bg-signal-negative/5"
+                  : "border-border-hairline bg-bg-surface"
+              }`}
+            >
+              <h2 className="mb-3 text-sm font-medium text-text-muted">After a loss</h2>
+              {revenge ? (
+                <>
+                  <p className="font-mono text-lg">
+                    {revenge.afterLossWinRate.toFixed(0)}% win rate
+                    <span className="ml-2 text-xs text-text-muted">vs {revenge.baselineWinRate.toFixed(0)}% usually</span>
+                  </p>
+                  <p className="mt-2 text-xs text-text-muted">
+                    Avg P&amp;L on the trade right after a loss: ${revenge.afterLossAvgPnl.toFixed(2)} (usually $
+                    {revenge.baselineAvgPnl.toFixed(2)})
+                  </p>
+                  {revenge.flagged && (
+                    <p className="mt-2 text-xs text-signal-negative">
+                      ⚠ You trade noticeably worse right after a loss — possible revenge trading.
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className="text-xs text-text-muted">Log a few more closed trades to unlock this insight.</p>
+              )}
+            </div>
+          </section>
         </>
       )}
     </div>
